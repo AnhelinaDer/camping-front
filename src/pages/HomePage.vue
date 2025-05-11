@@ -3,6 +3,13 @@
     <!-- Header -->
     <Header />
 
+    <!-- Welcome message -->
+    <div v-if="showWelcome" class="max-w-6xl mx-auto px-4 py-6">
+    <div class="bg-green-100 text-green-800 p-4 rounded mb-6 shadow">
+      Welcome back!
+    </div>
+    </div>
+    
     <!-- Search bar -->
     <section class="bg-green-600 text-white px-6 py-8">
       <div class="max-w-4xl mx-auto grid grid-cols-4 gap-2 bg-white text-black p-4 rounded-xl shadow">
@@ -51,7 +58,8 @@ export default {
       page: 1,
       limit: 10,
       hasMore: true,
-      isLoading: false
+      isLoading: false,
+      showWelcome: false,
     };
   },
   methods: {
@@ -101,6 +109,12 @@ export default {
     fetch('http://localhost:3000/spots')
       .then(res => res.json())
       .then(data => (this.spots = data));
+    // Check if logged in
+    const token = localStorage.getItem('token');
+    if (token && sessionStorage.getItem('justLoggedIn')) {
+      this.showWelcome = true;
+      sessionStorage.removeItem('justLoggedIn');
+    }
   }
 };
 </script>
