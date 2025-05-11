@@ -2,8 +2,7 @@
   <header class="bg-green-700 text-white px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow">
     <!-- Left: Logo -->
     <div class="flex items-center gap-2">
-      <img src="../assets/logo.png" alt="TrueNature" class="h-8" />
-      <span class="text-lg font-semibold">TrueNature</span>
+      <img src="../assets/logo.png" alt="TrueNature" class="h-10 rounded-xl" />
     </div>
 
     <!-- Center Nav -->
@@ -13,10 +12,10 @@
 
     <!-- Right Side -->
     <div class="flex items-center gap-6 text-sm relative">
-      <button class="hover:underline">Become a Host</button>
+        <router-link to="/registerHost" class="hover:underline cursor-pointer">Become a host</router-link>
 
       <!-- Auth Area -->
-      <div v-if="isLoggedIn" class="relative" @mouseleave="showMenu = false">
+      <div v-if="isLoggedIn" class="relative">
         <button
           @click="showMenu = !showMenu"
           class="hover:underline focus:outline-none"
