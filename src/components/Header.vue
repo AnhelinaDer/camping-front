@@ -8,7 +8,7 @@
 
     <!-- Center Nav -->
     <nav class="absolute left-1/2 transform -translate-x-1/2 text-sm font-medium">
-      <span class="hover:underline cursor-pointer">Places to stay</span>
+        <router-link to="/" class="hover:underline cursor-pointer">Places to stay</router-link>
     </nav>
 
     <!-- Right Side -->
@@ -44,22 +44,22 @@
 <script>
 export default {
     name: 'MainHeader',
-  data() {
-    return {
-      isLoggedIn: false,
-      showMenu: false
-    };
-  },
-  mounted() {
-    this.isLoggedIn = !!localStorage.getItem('token'); // Or use Vuex
-  },
-  methods: {
-    logout() {
-      localStorage.removeItem('token');
-      this.isLoggedIn = false;
-      this.showMenu = false;
-      this.$router.push('/login');
+    data() {
+        return {
+        isLoggedIn: false,
+        showMenu: false
+        };
+    },
+    mounted() {
+        this.isLoggedIn = !!localStorage.getItem('token'); // Or use Vuex
+    },
+    methods: {
+        logout() {
+        localStorage.removeItem('token');
+        this.isLoggedIn = false;
+        this.showMenu = false;
+        this.$router.push('/login');
+        }
     }
-  }
 };
 </script>

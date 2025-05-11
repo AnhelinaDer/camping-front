@@ -17,7 +17,7 @@
 
     <!-- Spot grid -->
     <main class="flex-1 px-6 py-8">
-      <h2 class="text-xl font-semibold mb-6">View spots</h2>
+      <h2 class="text-xl font-semibold mb-6">View camping spots</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <SpotCard v-for="spot in spots" :key="spot.spotId" :spot="spot" />
       </div>

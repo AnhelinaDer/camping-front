@@ -2,7 +2,7 @@
   <div class="w-full max-w-sm shadow-md rounded-lg">
     <div class="overflow-hidden rounded-xl">
       <img
-        :src="spot.images?.[0]?.imageURL || placeholder"
+        :src="require('@/assets/spotImages/' + spot.images[0].imageURL) || placeholder"
         alt="Spot Image"
         class="w-full h-48 object-cover"
       />
