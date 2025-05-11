@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-sm shadow-md rounded-lg">
+  <router-link :to="{ name: 'CampingSpot', params: { id: spot.spotId } }" class="w-full max-w-sm shadow-md rounded-lg">
     <div class="overflow-hidden rounded-xl">
       <img
         :src="require('@/assets/spotImages/' + spot.images[0].imageURL) || placeholder"
@@ -20,7 +20,7 @@
     <div class="mt-2 text-left font-medium text-lg text-gray-900 px-1">
       {{ formattedPrice }}
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
