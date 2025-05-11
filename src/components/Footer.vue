@@ -1,8 +1,7 @@
 <template>
-  <footer class="bg-green-700 text-white py-6 text-sm text-center mt-10">
+  <footer class="bg-green-700 text-white py-4 text-sm text-center mt-10">
     <p>Help Center: 04704704704</p>
-    <p>We don't guarantee spot descriptions accuracy.</p>
-    <p>Cancellation options</p>
+    <p>TrueNature doen't guarantee spots' descriptions accuracy.</p>
     <p class="mt-4">© 2025</p>
   </footer>
 </template>
