@@ -139,6 +139,8 @@ export default {
     confirmDelete() {
       if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
         this.successMessage = 'Account deleted. Redirecting...';
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('justLoggedIn');
         this.deleteAccount();
       }
     },

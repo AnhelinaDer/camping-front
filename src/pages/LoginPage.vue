@@ -47,6 +47,7 @@
           Don't have an account?
           <router-link to="/register" class="underline font-medium">Register</router-link>
         </p>
+
       </div>
     </main>
 
@@ -80,7 +81,7 @@ export default {
       return Object.keys(errors).length === 0;
     },
     async handleLogin() {
-      if (!this.validate()) return;
+      //this.errors.general = ''; // reset any previous errors
 
       try {
         const response = await fetch('http://localhost:3000/login', {
@@ -94,18 +95,23 @@ export default {
 
         const data = await response.json();
 
-        if (data.token) {
+        if (response.status === 401 && data.error === 'Account inactive') {
+          this.errors.general = 'This account has been deleted or deactivated.';
+        } else if (response.status === 401) {
+          this.errors.general = 'Invalid username or password.';
+        } else if (data.token) {
           localStorage.setItem('token', data.token);
           sessionStorage.setItem('justLoggedIn', 'true');
           this.$router.push('/');
         } else {
-          this.errors.general = 'Invalid username or password';
+          this.errors.general = 'Login failed.';
         }
       } catch (err) {
         console.error(err);
-        this.errors.general = 'Login failed. Please try again later.';
+        this.errors.general = 'Login failed due to server error.';
       }
     }
+
   }
 };
 </script>
