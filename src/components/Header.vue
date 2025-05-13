@@ -15,7 +15,7 @@
         <router-link to="/registerHost" class="hover:underline cursor-pointer">Become a host</router-link>
 
       <!-- Auth Area -->
-      <div v-if="isLoggedIn" class="relative">
+      <div v-if="isLoggedIn" class="relative" @hover="showMenu = true">
         <button
           @click="showMenu = !showMenu"
           class="hover:underline focus:outline-none"
@@ -25,7 +25,7 @@
 
         <div
           v-if="showMenu"
-          class="absolute right-0 mt-2 bg-white text-black shadow-md rounded w-40 z-50"
+          class="absolute right-0 mt-2 bg-white text-black shadow-md rounded w-40 z-50"  @mouseleave="showMenu = false"
         >
           <router-link to="/bookings" class="block px-4 py-2 hover:bg-gray-100">My Bookings</router-link>
           <router-link to="/profile" class="block px-4 py-2 hover:bg-gray-100">Profile</router-link>

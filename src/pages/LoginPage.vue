@@ -96,6 +96,7 @@ export default {
 
         if (data.token) {
           localStorage.setItem('token', data.token);
+          sessionStorage.setItem('justLoggedIn', 'true');
           this.$router.push('/');
         } else {
           this.errors.general = 'Invalid username or password';
