@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen bg-gray-100 flex flex-col">
     <Header />
 
-    <main class="max-w-xl mx-auto py-10 px-4">
+    <main class="max-w-xl mx-auto py-10 px-4 flex-grow">
       <h1 class="text-2xl font-bold text-center mb-6">Book Your Stay</h1>
 
       <div v-if="spot && availableDates.length" class="bg-white p-6 rounded shadow space-y-6">
@@ -65,10 +65,10 @@ export default {
   },
   computed: {
         formattedStart() {
-          return this.dateRange.start ? this.dateRange.start.toISOString().split('T')[0] : '—';
+          return this.dateRange.start ? this.dateRange.start.toISOString().split('T')[0] : '-';
         },
         formattedEnd() {
-          return this.dateRange.end ? this.dateRange.end.toISOString().split('T')[0] : '—';
+          return this.dateRange.end ? this.dateRange.end.toISOString().split('T')[0] : '-';
         },
       numberOfNights() {
         if (!this.dateRange.start || !this.dateRange.end) return 0;
