@@ -27,7 +27,7 @@
           v-if="showMenu"
           class="absolute right-0 mt-2 bg-white text-black shadow-md rounded w-40 z-50"  @mouseleave="showMenu = false"
         >
-          <router-link to="/bookings" class="block px-4 py-2 hover:bg-gray-100">My Bookings</router-link>
+          <router-link to="/my-bookings" class="block px-4 py-2 hover:bg-gray-100">My Bookings</router-link>
           <router-link to="/profile" class="block px-4 py-2 hover:bg-gray-100">Profile</router-link>
           <button @click="logout" class="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
         </div>

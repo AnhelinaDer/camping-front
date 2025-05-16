@@ -134,7 +134,7 @@ export default {
 
         if (res.ok) {
           alert('Booking successful!');
-          this.$router.push('/'); // my-bookings
+          this.$router.push('/my-bookings'); 
         } else {
           const error = await res.json();
           alert(error.message || 'Booking failed.');
