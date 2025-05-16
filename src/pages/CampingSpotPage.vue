@@ -43,7 +43,7 @@
         <!-- Book Now -->
         <div class="mt-6">
           <router-link
-            :to="`/book/${spot.spotId}`"
+            :to="{ name: 'BookSpot', params: { id: spot.spotId } }"
             class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold"
           >
             Book Now
