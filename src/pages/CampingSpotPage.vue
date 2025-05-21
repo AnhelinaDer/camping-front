@@ -50,7 +50,7 @@
         </div>
 
         <!-- Book Now -->
-        <div class="mt-6">
+        <div v-if="!isOwner" class="mt-6">
           <router-link
             :to="{ name: 'BookSpot', params: { id: spot.spotId } }"
             class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold"
@@ -59,6 +59,15 @@
           </router-link>
         </div>
 
+        <div v-if="isOwner" class="mt-6">
+          <router-link
+            :to="{ name: 'EditSpot', params: { id: spot.spotId } }"
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold"
+          >
+            Edit Spot
+          </router-link>
+        </div>
+        
         <!-- Reviews -->
         <div class="mt-10">
           <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
@@ -91,6 +100,7 @@ export default {
   components: { Header, Footer },
   data() {
     return {
+      isOwner: null,
       spot: null,
       loading: true,
       error: null
@@ -98,6 +108,8 @@ export default {
   },
   async mounted() {
     try {
+      const token = localStorage.getItem('token');
+
       const id = this.$route.params.id;
       const response = await fetch(`http://localhost:3000/spots/${id}`);
       
@@ -114,6 +126,13 @@ export default {
       }
 
       this.spot = data;
+
+      // Check if the user is the owner of the spot
+      if (token) {
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        this.isOwner = decodedToken.userId === this.spot.ownerId;
+      }
+
     } catch (err) {
       this.error = err.message;
       console.error('Error loading spot:', err);
