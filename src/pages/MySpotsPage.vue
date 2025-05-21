@@ -27,7 +27,7 @@
         >
           <img
             v-if="spot.images && spot.images[0]"
-            :src="require('@/assets/spotImages/' + spot.images[0].imageURL)"
+            :src="`http://localhost:3000/spotImages/${spot.images[0].imageURL}`"
             :alt="spot.name"
             class="w-full h-48 object-cover"
           >

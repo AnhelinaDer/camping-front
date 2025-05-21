@@ -9,18 +9,20 @@ import ProfilePage from './pages/ProfilePage.vue';
 import BookingPage from './pages/BookingPage.vue';
 import MyBookingsPage from './pages/MyBookingsPage.vue';
 import MySpotsPage from './pages/MySpotsPage.vue';
+import NewSpotPage from './pages/NewSpotPage.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
   { path: '/', name: 'Home', component: HomePage },
   { path: '/login', name: 'Login', component: LoginPage },
-  { path: '/spots/:id', name: 'CampingSpot', component: CampingSpotPage },
   { path: '/register', name: 'Register', component: RegisterPage },
   { path: '/profile', name: 'Profile', component: ProfilePage },
   { path: '/book/:id', name: 'BookSpot', component: BookingPage },
   { path: '/my-bookings', name: 'MyBookings', component: MyBookingsPage},
-  { path: '/my-spots', name: 'MySpots', component: MySpotsPage }
+  { path: '/my-spots', name: 'MySpots', component: MySpotsPage },
+  { path: '/spots/new', name: 'NewSpot', component: NewSpotPage },
+  { path: '/spots/:id', name: 'CampingSpot', component: CampingSpotPage },
 
   // Add more routes here
 ];

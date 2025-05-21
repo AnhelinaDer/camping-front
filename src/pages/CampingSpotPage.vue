@@ -3,7 +3,16 @@
     <Header />
 
     <div class="max-w-6xl mx-auto px-4 py-10">
-      <div v-if="spot" class="space-y-6">
+      <div v-if="loading" class="text-center text-gray-600 mt-10">Loading spot details...</div>
+
+      <div v-else-if="error" class="text-center mt-10">
+        <p class="text-red-600 text-lg">{{ error }}</p>
+        <router-link to="/" class="text-green-600 hover:underline mt-4 inline-block">
+          Return to Home
+        </router-link>
+      </div>
+
+      <div v-else-if="spot" class="space-y-6">
         <!-- Title -->
         <div>
           <h1 class="text-3xl font-bold text-gray-800">{{ spot.name }}</h1>
@@ -11,12 +20,12 @@
         </div>
 
         <!-- Images -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div v-if="spot.images && spot.images.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <img
             v-for="(img, index) in spot.images"
             :key="index"
-            :src="require('@/assets/spotImages/' + img.imageURL)"
-            alt="Spot Image"
+            :src="`http://localhost:3000/spotImages/${img.imageURL}`"
+            :alt="'Image ' + (index + 1) + ' of ' + spot.name"
             class="rounded-xl w-full h-52 object-cover"
           />
         </div>
@@ -25,12 +34,12 @@
         <p class="text-gray-700">{{ spot.description }}</p>
 
         <!-- Price -->
-        <div class="text-xl font-semibold text-green-700">
+        <div v-if="spot.prices && spot.prices[0]" class="text-xl font-semibold text-green-700">
           {{ spot.prices[0].price }} {{ spot.prices[0].currency || '€' }} / night
         </div>
 
         <!-- Specifications -->
-        <div class="flex flex-wrap gap-2 text-sm">
+        <div v-if="spot.spotspecifications && spot.spotspecifications.length" class="flex flex-wrap gap-2 text-sm">
           <span
             v-for="spec in spot.spotspecifications"
             :key="spec.specifications.specificationId"
@@ -61,15 +70,13 @@
             >
               <p class="font-semibold text-gray-800">{{ review.users.firstName }}</p>
               <p class="text-sm text-gray-500">{{ new Date(review.createdAt).toLocaleDateString() }}</p>
-                <p class="text-yellow-500 mt-1">★ {{ review.rating }}</p>
+              <p class="text-yellow-500 mt-1">★ {{ review.rating }}</p>
               <p class="mt-2 text-gray-700">{{ review.comment }}</p>
             </div>
           </div>
           <p v-else class="text-gray-500">No reviews yet.</p>
         </div>
       </div>
-
-      <div v-else class="text-center text-gray-600 mt-10">Loading spot details...</div>
     </div>
 
     <Footer />
@@ -84,18 +91,42 @@ export default {
   components: { Header, Footer },
   data() {
     return {
-      spot: null
+      spot: null,
+      loading: true,
+      error: null
     };
   },
-  mounted() {
-    const id = this.$route.params.id;
-    fetch(`http://localhost:3000/spots/${id}`)
-      .then(res => res.json())
-      .then(data => (this.spot = data))
-      .catch(err => {
-        console.error(err);
-        alert('Failed to load spot.');
-      });
+  async mounted() {
+    try {
+      const id = this.$route.params.id;
+      const response = await fetch(`http://localhost:3000/spots/${id}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Spot not found');
+        }
+        throw new Error('Failed to load spot details');
+      }
+
+      const data = await response.json();
+      if (!data) {
+        throw new Error('Spot not found');
+      }
+
+      this.spot = data;
+    } catch (err) {
+      this.error = err.message;
+      console.error('Error loading spot:', err);
+    } finally {
+      this.loading = false;
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    // Reset state when route params change
+    this.spot = null;
+    this.loading = true;
+    this.error = null;
+    next();
   }
 };
 </script>
