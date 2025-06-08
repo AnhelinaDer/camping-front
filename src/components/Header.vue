@@ -12,13 +12,14 @@
 
     <!-- Right Side -->
     <div class="flex items-center gap-6 text-sm relative">
-        <router-link 
+        <button 
           v-if="isLoggedIn && userRole === 'User'" 
-          to="/registerHost" 
+          to="/spots/new" 
           class="hover:underline cursor-pointer"
+          @click="becomeHost()"
         >
           Become a host
-        </router-link>
+    </button>
 
       <!-- Auth Area -->
       <div v-if="isLoggedIn" class="relative" @hover="showMenu = true">
@@ -82,7 +83,39 @@ export default {
               this.userRole = null;
             }
           }
+        },
+        async becomeHost() {
+          if (!confirm('Upgrade to host?')) return;
+
+          const token = localStorage.getItem('token');
+
+          try {
+            const res = await fetch('http://localhost:3000/users/me/role', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ role: 'Owner' })
+            });
+
+            if (!res.ok) {
+              throw new Error('Could not upgrade to host');
+            }
+            const { token: newToken } = await res.json();
+
+            // Save new token and update UI
+            localStorage.setItem('token', newToken);
+            this.decodeToken();
+            alert('You are now a host!');
+            this.$router.push('/spots/new');
+
+          } catch (err) {
+            console.error(err);
+            alert(err.message);
+          }
         }
+      
     },
     mounted() {
         const token = localStorage.getItem('token');
