@@ -12,14 +12,30 @@
     
     <!-- Search bar -->
     <section class="bg-green-600 text-white px-6 py-8">
-      <div class="max-w-4xl mx-auto grid grid-cols-4 gap-2 bg-white text-black p-4 rounded-xl shadow">
-        <input class="col-span-1 border p-2 rounded" placeholder="Where are you going?" />
-        <input class="col-span-1 border p-2 rounded" placeholder="Add dates" />
-        <input class="col-span-1 border p-2 rounded" placeholder="Add dates" />
-        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">🔍</button>
+    <div class="max-w-4xl mx-auto px-4">
+      <!-- Search box -->
+      <div class="flex overflow-hidden rounded-full shadow-lg bg-white">
+        <!-- Input -->
+        <input
+          v-model="search"
+          @keyup.enter="resetAndLoad"
+          type="text"
+          placeholder="Where are you going?"
+          class="flex-1 px-6 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
+        />
+
+        <!-- Button -->
+        <button
+          @click="resetAndLoad"
+          class="px-6 flex items-center justify-center bg-white-600 hover:bg-green-700 text-white transition-colors"
+        >
+          <!-- You can swap this for a Heroicon/Mига‐SVG -->
+          🔍
+        </button>
       </div>
       <!-- Tags -->
       <FilterBar :selected="selectedFilters" @toggle-filter="toggleFilter" />
+    </div>
     </section>
 
     <!-- Spot grid -->
@@ -65,9 +81,18 @@ export default {
   methods: {
     buildQuery() {
       const params = new URLSearchParams();
+
+      // add pagination params and limit
       params.append('page', this.page);
       params.append('limit', this.limit);
 
+      // add search if non-empty
+      if (this.search.trim()) {
+        params.append('search', this.search.trim());
+      }
+
+      // add selected filters
+      // If there are selected filters, join them with commas
       if (this.selectedFilters.length > 0) {
         params.append('specs', this.selectedFilters.join(','));
       }
