@@ -146,34 +146,55 @@
             </div>
           </div>
 
+          <!-- Availability Ranges -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label for="startDate" class="block text-sm text-gray-600">Start Date</label>
-                <input
-                  type="date"
-                  id="startDate"
-                  v-model="form.startDate"
-                  required
-                  :min="today"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                >
-              </div>
-              <div>
-                <label for="endDate" class="block text-sm text-gray-600">End Date</label>
-                <input
-                  type="date"
-                  id="endDate"
-                  v-model="form.endDate"
-                  required
-                  :min="form.startDate || today"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                >
-              </div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Availability Ranges
+            </label>
+            <!-- new‐range form -->
+            <div class="flex flex-wrap gap-2 items-end">
+              <!-- Date Picker -->
+              <DatePicker
+                v-model="newRange"
+                :ownerChosenDates="generateAvailabilityDates().map(d => d.date)"
+              />
+
+              <button
+                type="button"
+                :disabled="!canAddRange"
+                @click="addRange"
+                class="bg-green-600 text-white px-3 py-1 rounded disabled:opacity-50"
+              >
+                Add Range
+              </button>
             </div>
+            <p v-if="rangeError" class="text-red-500 text-xs mt-1">{{ rangeError }}</p>
+            <p class="text-gray-500 text-xs mt-1">
+              Select a start and end date to add a range. The end date must be at least one day after the start date. 
+              The chosen date ranges will be disabled in the calendar view, to change this you need to remove the range 
+              from the list and choose new dates.
+            </p>
+
+            <!-- list out your ranges -->
+            <ul class="mt-4 space-y-1">
+              <li
+                v-for="(r, i) in form.availabilityRanges"
+                :key="i"
+                class="flex justify-between items-center bg-gray-50 px-3 py-2 rounded"
+              >
+                <span>{{ r.startDate }} → {{ r.endDate }}</span>
+                <button
+                  type="button"
+                  @click="removeRange(i)"
+                  class="text-red-600 hover:underline text-sm"
+                >
+                  Remove
+                </button>
+              </li>
+            </ul>
           </div>
 
+          <!-- Image handling -->
           <div>
             <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
             <input
@@ -252,9 +273,10 @@
 <script>
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
+import DatePicker from '@/components/DatePicker.vue';
 
 export default {
-  components: { Header, Footer },
+  components: { Header, Footer, DatePicker },
   data() {
     return {
       form: {
@@ -267,8 +289,7 @@ export default {
         countryId: '',
         cityId: '',
         specifications: [],
-        startDate: '',
-        endDate: '',
+        availabilityRanges: [],
         currency: 'EUR'
       },
       countries: [],
@@ -277,7 +298,9 @@ export default {
       selectedImages: [],
       existingImages: [],
       loading: true,
-      error: null
+      error: null,
+      newRange: { start: '', end: '' },
+      rangeError: null,
     };
   },
   computed: {
@@ -286,6 +309,14 @@ export default {
     },
     spotId() {
       return this.$route.params.id;
+    },
+    // can only add if both dates set and end > start
+    canAddRange() {
+      const r = this.newRange || {};
+      const startDate = r.start, endDate = r.end;
+
+      if (!startDate || !endDate) return false;
+      return new Date(endDate) > new Date(startDate);
     }
   },
   methods: {
@@ -318,6 +349,41 @@ export default {
         
         // Load existing images
         this.existingImages = spot.images || [];
+
+        // Load date ranges
+        const days = spot.spotsavailable
+          .filter(r => !r.isBooked)
+          .map(r => new Date(r.date))
+          .sort((a,b) => a - b);
+
+        const ranges = [];
+        if (days.length) {
+          let start = days[0], prev = days[0];
+          for (let i = 1; i < days.length; i++) {
+            const nextDay = new Date(prev);
+            nextDay.setDate(nextDay.getDate() + 1);
+            if (days[i].getTime() === nextDay.getTime()) {
+              prev = days[i];
+            } else {
+              if ((prev - start)/(1000*60*60*24) >= 1) {
+                ranges.push({
+                  startDate: start.toISOString().split('T')[0],
+                  endDate:   prev.toISOString().split('T')[0]
+                });
+              }
+              start = days[i];
+              prev  = days[i];
+            }
+          }
+          // final
+          if ((prev - start)/(1000*60*60*24) >= 1) {
+            ranges.push({
+              startDate: start.toISOString().split('T')[0],
+              endDate:   prev.toISOString().split('T')[0]
+            });
+          }
+        }
+        this.form.availabilityRanges = ranges;
 
         // Load cities for the selected country
         await this.loadCities();
@@ -380,32 +446,50 @@ export default {
     removeExistingImage(index) {
       this.existingImages.splice(index, 1);
     },
+    addRange() {
+      this.rangeError = null;
+      if (!this.canAddRange) {
+        this.rangeError = 'End must be at least one day after start.';
+        return;
+      }
+
+      // push and reset inputs
+      this.form.availabilityRanges.push({
+        startDate: this.newRange.start.toISOString().split('T')[0],
+        endDate:   this.newRange.end.toISOString().split('T')[0]
+      });
+
+      this.newRange = { start: null, end: null };
+    },
+    removeRange(index) {
+      this.form.availabilityRanges.splice(index, 1);
+    },
+    // flatten your ranges into the API payload
     generateAvailabilityDates() {
       const dates = [];
-      const start = new Date(this.form.startDate);
-      const end = new Date(this.form.endDate);
-      
-      // Set time to midnight to avoid timezone issues
-      start.setHours(0, 0, 0, 0);
-      end.setHours(0, 0, 0, 0);
-      
-      // Create a new date object to avoid modifying the original start date
-      let currentDate = new Date(start);
-      
-      while (currentDate <= end) {
-        dates.push({
-          date: currentDate.toISOString(),
-          isBooked: false
-        });
-        // Move to next day
-        currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
-      }
-      
+      this.form.availabilityRanges.forEach(({ startDate, endDate }) => {
+        let cur = new Date(startDate);
+        const end = new Date(endDate);
+        cur.setHours(0,0,0,0);
+        while (cur <= end) {
+          dates.push({
+            date: cur.toISOString(),
+            isBooked: false
+          });
+          cur.setDate(cur.getDate() + 1);
+        }
+      });
       return dates;
     },
     async handleSubmit() {
       this.loading = true;
       this.error = null;
+
+      if (this.form.availabilityRanges.length === 0) {
+        this.error = 'Please add at least one availability range.';
+        this.loading = false;
+        return;
+      }
 
       try {
         const token = localStorage.getItem('token');
