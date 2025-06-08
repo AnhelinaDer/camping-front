@@ -7,8 +7,8 @@
       :class="[
         'px-3 py-1 rounded-full border transition',
         selected.includes(spec.specificationId)
-          ? 'bg-green-600 text-white'
-          : 'bg-white text-green-700 hover:bg-green-100'
+          ? 'bg-white text-green-700 hover:bg-green-100'
+          : 'bg-green-600 text-white'
       ]"
     >
       {{ spec.specificationName }}
