@@ -181,6 +181,8 @@
               Select a start and end date to add a range. The end date must be at least one day after the start date. 
               The chosen date ranges will be disabled in the calendar view, to change this you need to remove the range 
               from the list and choose new dates.
+              <br>
+              <strong>Note: Booked dates are disabled, you cannot change them.</strong>
             </p>
 
             <!-- list out your ranges -->
@@ -309,6 +311,7 @@ export default {
       error: null,
       newRange: { start: '', end: '' },
       rangeError: null,
+      bookedDates: [],
     };
   },
   computed: {
@@ -363,6 +366,11 @@ export default {
           .filter(r => !r.isBooked)
           .map(r => new Date(r.date))
           .sort((a,b) => a - b);
+
+        // booked dates are not included in the ranges
+        this.bookedDates = spot.spotsavailable
+          .filter(r => r.isBooked)
+          .map(r => new Date(r.date).toISOString().split('T')[0]);
 
         const ranges = [];
         if (days.length) {
@@ -486,6 +494,14 @@ export default {
           });
           cur.setDate(cur.getDate() + 1);
         }
+      });
+
+      // Add booked dates
+      this.bookedDates.forEach(date => {
+        dates.push({
+          date: new Date(date).toISOString(),
+          isBooked: true
+        });
       });
 
       // Ensure at least one date is present if no ranges are added so the date picker works correctly
