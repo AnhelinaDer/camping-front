@@ -41,9 +41,6 @@
             <div>
               <label for="price" class="block text-sm font-medium text-gray-700">Price per Night</label>
               <div class="mt-1 relative rounded-md shadow-sm">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-gray-500 sm:text-sm">€</span>
-                </div>
                 <input
                   type="number"
                   id="price"
@@ -54,6 +51,17 @@
                   class="pl-7 block w-full rounded-md border-gray-300 focus:border-green-500 focus:ring-green-500"
                 >
               </div>
+            </div>
+
+            <div>
+              <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+              <input
+                type="text"
+                id="currency"
+                v-model="form.currency"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+              >
             </div>
 
             <div>
@@ -479,6 +487,15 @@ export default {
           cur.setDate(cur.getDate() + 1);
         }
       });
+
+      // Ensure at least one date is present if no ranges are added so the date picker works correctly
+      if (dates.length === 0) {
+        dates.push({
+          date: new Date(2015, 1, 1).toISOString(),
+          isBooked: false
+        });
+      }
+
       return dates;
     },
     async handleSubmit() {
