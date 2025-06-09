@@ -4,7 +4,9 @@
 
     <main class="max-w-xl mx-auto py-10 px-4">
         <h1 class="text-2xl font-bold text-center mb-6">My Profile</h1>
-
+        <p class="text-center text-green-600 mb-4"><strong>
+          {{ user ? `Welcome, ${user.username}! ` : 'Loading profile...' }}
+        </strong></p>
         <div v-if="user" class="space-y-4 bg-white p-6 rounded shadow">
             <!-- Editable Form -->
             <form @submit.prevent="updateProfile" class="space-y-4">
