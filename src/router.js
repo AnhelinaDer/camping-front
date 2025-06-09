@@ -14,6 +14,7 @@ import EditSpotPage from './pages/EditSpotPage.vue';
 import BookingPaymentPage from './pages/BookingPaymentPage.vue';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.vue';
 import ResetPasswordPage from './pages/ResetPasswordPage.vue';
+import AdminDashboard from './pages/AdminDashboard.vue';
 
 Vue.use(VueRouter);
 
@@ -31,6 +32,7 @@ const routes = [
   { path: '/bookings/:id/payment', name: 'BookingPayment', component: BookingPaymentPage },
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPasswordPage },
   { path: '/reset-password/:token', name: 'ResetPassword', component: ResetPasswordPage },
+  { path: '/admin', name: 'AdminDashboard', component: AdminDashboard }
 ];
 
 const router = new VueRouter({

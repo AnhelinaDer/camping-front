@@ -107,7 +107,13 @@ export default {
         } else if (data.token) {
           localStorage.setItem('token', data.token);
           sessionStorage.setItem('justLoggedIn', 'true');
-          this.$router.push('/');
+          // redirect admin to admin dashboard, others to home
+          const decodedToken = JSON.parse(atob(data.token.split('.')[1]));
+          if (decodedToken.role === 'Admin') {
+            this.$router.push('/admin');
+          } else {
+            this.$router.push('/');
+          }
         } else {
           this.errors.general = 'Login failed.';
         }
