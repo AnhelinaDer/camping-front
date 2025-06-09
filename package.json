@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^7.3.1",
     "@tailwindcss/cli": "^4.1.4",
     "core-js": "^3.8.3",
     "leaflet": "^1.9.4",

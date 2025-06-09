@@ -132,9 +132,11 @@ export default {
           })
         });
 
+        const data = await res.json();   
+
         if (res.ok) {
-          alert('Booking successful!');
-          this.$router.push('/my-bookings'); 
+          const { booking } = data;      
+          this.$router.push(`/bookings/${booking.bookingId}/payment`);
         } else {
           const error = await res.json();
           alert(error.message || 'Booking failed.');

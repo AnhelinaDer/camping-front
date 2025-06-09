@@ -11,6 +11,7 @@ import MyBookingsPage from './pages/MyBookingsPage.vue';
 import MySpotsPage from './pages/MySpotsPage.vue';
 import NewSpotPage from './pages/NewSpotPage.vue';
 import EditSpotPage from './pages/EditSpotPage.vue';
+import BookingPaymentPage from './pages/BookingPaymentPage.vue';
 
 Vue.use(VueRouter);
 
@@ -25,8 +26,7 @@ const routes = [
   { path: '/spots/new', name: 'NewSpot', component: NewSpotPage },
   { path: '/spots/:id/edit', name: 'EditSpot', component: EditSpotPage },
   { path: '/spots/:id', name: 'CampingSpot', component: CampingSpotPage },
-
-  // Add more routes here
+  { path: '/bookings/:id/payment', name: 'BookingPayment', component: BookingPaymentPage }
 ];
 
 const router = new VueRouter({
