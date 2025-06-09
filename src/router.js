@@ -12,6 +12,8 @@ import MySpotsPage from './pages/MySpotsPage.vue';
 import NewSpotPage from './pages/NewSpotPage.vue';
 import EditSpotPage from './pages/EditSpotPage.vue';
 import BookingPaymentPage from './pages/BookingPaymentPage.vue';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.vue';
+import ResetPasswordPage from './pages/ResetPasswordPage.vue';
 
 Vue.use(VueRouter);
 
@@ -26,7 +28,9 @@ const routes = [
   { path: '/spots/new', name: 'NewSpot', component: NewSpotPage },
   { path: '/spots/:id/edit', name: 'EditSpot', component: EditSpotPage },
   { path: '/spots/:id', name: 'CampingSpot', component: CampingSpotPage },
-  { path: '/bookings/:id/payment', name: 'BookingPayment', component: BookingPaymentPage }
+  { path: '/bookings/:id/payment', name: 'BookingPayment', component: BookingPaymentPage },
+  { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPasswordPage },
+  { path: '/reset-password/:token', name: 'ResetPassword', component: ResetPasswordPage },
 ];
 
 const router = new VueRouter({

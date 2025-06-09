@@ -34,6 +34,11 @@
           <!-- General error -->
           <p v-if="errors.general" class="text-red-600 text-sm text-center">{{ errors.general }}</p>
 
+          <!-- Forgot password -->
+           <div class="text-sm text-right">
+            <router-link to="/forgot-password" class="text-green-600 hover:underline">Forgot password?</router-link>
+          </div>
+
           <!-- Submit -->
           <button
             type="submit"
