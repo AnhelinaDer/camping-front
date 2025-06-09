@@ -29,7 +29,6 @@
           @click="resetAndLoad"
           class="px-6 flex items-center justify-center bg-white-600 hover:bg-green-700 text-white transition-colors"
         >
-          <!-- You can swap this for a Heroicon/Mига‐SVG -->
           🔍
         </button>
       </div>
@@ -45,11 +44,17 @@
         <SpotCard v-for="spot in spots" :key="spot.spotId" :spot="spot" />
       </div>
 
-      <!-- Pagination dots -->
-      <div class="flex justify-center mt-6 space-x-2">
-        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-        <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+      <!-- Load More -->
+      <div class="flex justify-center mt-6">
+        <button
+          v-if="hasMore"
+          @click="loadMore"
+          :disabled="isLoading"
+          class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+        >
+          {{ isLoading ? 'Loading…' : 'Load More' }}
+        </button>
+        <span v-else class="text-gray-500">No more spots to load</span>
       </div>
     </main>
 
@@ -59,10 +64,10 @@
 </template>
 
 <script>
-import Header from '@/components/Header.vue'
-import SpotCard from '@/components/SpotCard.vue'
-import Footer from '@/components/Footer.vue';
-import FilterBar from '@/components/FilterBar.vue';
+import Header    from '@/components/Header.vue'
+import SpotCard  from '@/components/SpotCard.vue'
+import Footer    from '@/components/Footer.vue'
+import FilterBar from '@/components/FilterBar.vue'
 
 export default {
   components: { Header, SpotCard, Footer, FilterBar },
@@ -71,75 +76,88 @@ export default {
       spots: [],
       search: '',
       selectedFilters: [],
+
       page: 1,
       limit: 10,
       hasMore: true,
       isLoading: false,
       showWelcome: false,
-    };
+      error: null
+    }
   },
   methods: {
     buildQuery() {
-      const params = new URLSearchParams();
+      const params = new URLSearchParams()
+      params.append('page', this.page)
+      params.append('limit', this.limit)
 
-      // add pagination params and limit
-      params.append('page', this.page);
-      params.append('limit', this.limit);
-
-      // add search if non-empty
       if (this.search.trim()) {
-        params.append('search', this.search.trim());
+        params.append('search', this.search.trim())
       }
-
-      // add selected filters
-      // If there are selected filters, join them with commas
-      if (this.selectedFilters.length > 0) {
-        params.append('specs', this.selectedFilters.join(','));
+      if (this.selectedFilters.length) {
+        params.append('specs', this.selectedFilters.join(','))
       }
-
-      return params.toString();
+      return params.toString()
     },
+
     async resetAndLoad() {
-      this.page = 1;
-      this.spots = [];
-      this.hasMore = true;
-      await this.loadMore();
+      this.page    = 1
+      this.spots   = []
+      this.hasMore = true
+      this.error   = null
+      await this.loadMore()
     },
+
     async loadMore() {
-      if (this.isLoading || !this.hasMore) return;
-      this.isLoading = true;
+      if (this.isLoading || !this.hasMore) return
+      this.isLoading = true
+      this.error     = null
 
-      const query = this.buildQuery();
-      const res = await fetch(`http://localhost:3000/spots?${query}`);
-      const data = await res.json();
+      try {
+        const query = this.buildQuery()
+        const res   = await fetch(`http://localhost:3000/spots?${query}`)
+        if (!res.ok) throw new Error('Failed to load spots')
+        const data = await res.json()
 
-      if (data.length < this.limit) this.hasMore = false;
-      this.spots.push(...data);
-      this.page++;
-      this.isLoading = false;
-    },
-    toggleFilter(id) {
-      const index = this.selectedFilters.indexOf(id);
-      if (index === -1) {
-        this.selectedFilters.push(id);
-      } else {
-        this.selectedFilters.splice(index, 1);
+        // Append & advance page
+        this.spots.push(...data)
+        this.page++
+
+        // If fewer than `limit` came back, no more pages
+        if (data.length < this.limit) {
+          this.hasMore = false
+        }
+      } catch (err) {
+        this.error = err.message
+      } finally {
+        this.isLoading = false
       }
-      this.resetAndLoad(); // fetch spots based on updated filters
-    }
+    },
 
+    toggleFilter(id) {
+      const idx = this.selectedFilters.indexOf(id)
+      if (idx === -1) this.selectedFilters.push(id)
+      else             this.selectedFilters.splice(idx, 1)
+      this.resetAndLoad()
+    },
+
+    onSearch() {
+      // Called on Enter or search button click
+      this.resetAndLoad()
+    }
   },
+
   mounted() {
-    // Fetch spots from API
-    fetch('http://localhost:3000/spots')
-      .then(res => res.json())
-      .then(data => (this.spots = data));
-    // Check if logged in
-    const token = localStorage.getItem('token');
+    // Kick off the first page load
+    this.resetAndLoad()
+
+    // Show welcome message if just logged in
+    const token = localStorage.getItem('token')
     if (token && sessionStorage.getItem('justLoggedIn')) {
-      this.showWelcome = true;
-      sessionStorage.removeItem('justLoggedIn');
+      this.showWelcome = true
+      sessionStorage.removeItem('justLoggedIn')
     }
   }
-};
+}
 </script>
+
