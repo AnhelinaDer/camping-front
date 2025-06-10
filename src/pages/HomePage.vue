@@ -18,7 +18,6 @@
         <!-- Input -->
         <input
           v-model="search"
-          @keyup.enter="resetAndLoad"
           type="text"
           placeholder="Where are you going?"
           class="flex-1 px-6 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
@@ -76,7 +75,6 @@ export default {
       spots: [],
       search: '',
       selectedFilters: [],
-
       page: 1,
       limit: 10,
       hasMore: true,
@@ -121,6 +119,10 @@ export default {
 
         // Append & advance page
         this.spots.push(...data)
+        // rather than pushing the entire data array as a single item, it “spreads” its elements out 
+        // so each one gets pushed individually onto this.spots. That way your spots array grows by each element 
+        // of data rather than nesting an array inside it.
+        // same as this.spots.push(data[0], data[1], data[2], … etc for each element )
         this.page++
 
         // If fewer than `limit` came back, no more pages
@@ -137,7 +139,7 @@ export default {
     toggleFilter(id) {
       const idx = this.selectedFilters.indexOf(id)
       if (idx === -1) this.selectedFilters.push(id)
-      else             this.selectedFilters.splice(idx, 1)
+      else  this.selectedFilters.splice(idx, 1)
       this.resetAndLoad()
     },
 

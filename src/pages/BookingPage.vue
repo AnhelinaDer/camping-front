@@ -75,7 +75,7 @@ export default {
         const start = new Date(this.dateRange.start);
         const end = new Date(this.dateRange.end);
         const diffTime = end - start;
-        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        const diffDays = diffTime / (1000 * 60 * 60 * 24); // Convert milliseconds to days
         return diffDays;
       },
       totalPrice() {
@@ -96,7 +96,7 @@ export default {
         .then(data => {
             this.spot = data;
             this.pricePerNight = data.prices[0].price || 0;
-            this.currency = data.prices[0].currency || '€';
+            this.currency = data.prices[0].currency || 'Euro';
 
             // Process availability from spot
             this.availableDates = data.spotsavailable

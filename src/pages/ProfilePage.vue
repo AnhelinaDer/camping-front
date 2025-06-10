@@ -92,7 +92,7 @@ export default {
       headers: {
         Authorization: `Bearer ${token}`
       }
-    })
+      })
       .then(res => res.json())
       .then(data => {
         this.user = data;
@@ -103,10 +103,10 @@ export default {
         alert('Failed to load profile');
       });
 
-        // Fetch gender options
-        fetch('http://localhost:3000/genders')
-            .then(res => res.json())
-            .then(data => (this.genders = data));
+    // Fetch gender options
+    fetch('http://localhost:3000/genders')
+      .then(res => res.json())
+      .then(data => (this.genders = data));
   },
   methods: {
     async updateProfile() {
@@ -141,7 +141,6 @@ export default {
     confirmDelete() {
       if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
         this.successMessage = 'Account deleted. Redirecting...';
-        localStorage.removeItem('token');
         sessionStorage.removeItem('justLoggedIn');
         this.deleteAccount();
       }
@@ -174,6 +173,14 @@ export default {
 
 <style scoped>
 .form-input {
-  @apply w-full px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring focus:border-green-500;
+    @apply w-full            /* width: 100% */
+         px-3              /* padding-left/right: 0.75rem */
+         py-2              /* padding-top/bottom: 0.5rem */
+         border            /* 1px solid default border color */
+         rounded           /* border-radius: 0.25rem */
+         shadow-sm         /* small box-shadow */
+         focus:outline-none/* remove default focus outline */
+         focus:ring        /* add default focus ring (shadow) */
+         focus:border-green-500; /* on focus, set border-color to green-500 */
 }
 </style>

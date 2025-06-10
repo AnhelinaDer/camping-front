@@ -126,7 +126,10 @@ export default {
         }
     },
     watch: {
-      // Watch for route changes to update the role
+        // Watch the special `$route` object provided by Vue Router.
+        // This handler runs every time the route (i.e. the URL) changes,
+        // allowing to react to navigation—like when the user logs in,
+        // logs out, or the JWT in localStorage is updated.
       '$route'() {
         this.decodeToken();
       }

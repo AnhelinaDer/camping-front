@@ -86,8 +86,6 @@ export default {
       return Object.keys(errors).length === 0;
     },
     async handleLogin() {
-      //this.errors.general = ''; // reset any previous errors
-
       try {
         const response = await fetch('http://localhost:3000/login', {
           method: 'POST',
@@ -102,11 +100,14 @@ export default {
 
         if (response.status === 401 && data.error === 'Account inactive') {
           this.errors.general = 'This account has been deleted or deactivated.';
-        } else if (response.status === 401) {
+        } 
+        else if (response.status === 401) {
           this.errors.general = 'Invalid username or password.';
-        } else if (data.token) {
+        } 
+        else if (data.token) {
           localStorage.setItem('token', data.token);
           sessionStorage.setItem('justLoggedIn', 'true');
+          
           // redirect admin to admin dashboard, others to home
           const decodedToken = JSON.parse(atob(data.token.split('.')[1]));
           if (decodedToken.role === 'Admin') {
@@ -114,7 +115,8 @@ export default {
           } else {
             this.$router.push('/');
           }
-        } else {
+        } 
+        else {
           this.errors.general = 'Login failed.';
         }
       } catch (err) {

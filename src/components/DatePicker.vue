@@ -49,13 +49,21 @@ export default {
 
             return this.ownerChosenDates.map(date => new Date(date));
         },
+        // `proxy` is a computed property that creates a two‐way binding
+        // between the parent’s `v-model` and this child component’s `value` prop.
         proxy: {
+            // When the parent reads `v-model`, it actually reads `proxy`,
+            // which returns the current `value` prop passed in.
             get() {
             return this.value;
             },
+            // When the child wants to update the model (e.g. user selects a date),
+            // it sets `proxy`, which emits an `input` event carrying `val`.
+            // Vue’s `v-model` on a custom component listens for that `input` event
+            // and updates the parent’s bound variable accordingly.
             set(val) {
             this.$emit('input', val);
-            }
+            },
         }
     },
 };

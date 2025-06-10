@@ -8,7 +8,7 @@
     <div v-show="stripeReady">
       <form @submit.prevent="handleSubmit">
         <!-- Stripe Card Element -->
-        <div id="card-element" class="p-4 border rounded mb-2"></div>
+        <div id="card-element" class="p-4 border rounded mb-2 h-40"></div>
         <p v-if="cardError" class="text-red-500 text-sm mb-2">{{ cardError }}</p>
 
         <button
@@ -17,7 +17,7 @@
           class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50"
         >
           <span v-if="loading">Processing…</span>
-          <span v-else>Pay €{{ totalPrice }}</span>
+          <span v-else>Pay {{ currency }} {{ totalPrice }}</span>
         </button>
       </form>
     </div>
@@ -44,9 +44,10 @@ export default {
       elements: null,
       card: null,
 
-      stripeReady: false,     // ← defined here
+      stripeReady: false,     // defined here
       clientSecret: null,
       totalPrice: 0,
+      currency: "", 
 
       loading: false,
       error: '',
@@ -58,30 +59,42 @@ export default {
   },
   async mounted() {
     try {
-      // 1) Initialize Stripe.js
+      // Initialize Stripe.js by loading the Stripe client with a publishable key.
+      // `loadStripe` returns a Promise that resolves to a `stripe` object used for all further calls.
       this.stripe = await loadStripe('pk_test_51RPjS1QrYzMUj3wPc0DnVLuUmlBfWprYMKkHZ5pIOpROYypAx68BxpBPxPeZTBnuzzqwqkPnwWbhd2ofk1E1HgE700D2OeFFzY');
+      
+      // Create a set of UI components (Elements) tied to the Stripe instance.
       this.elements = this.stripe.elements();
 
-      // 2) Create & mount the card element immediately (DOM is present)
+      // Create the “card” Element, which injects a secure, styled credit-card input into the page.
+      // passed a `style` object to customize fonts, colors
       this.card = this.elements.create('card', {
         style: { base: { fontSize: '16px', color: '#32325d' } }
       });
+
+      // Mount that card Element into a DOM container with the ID `card-element`
       this.card.mount('#card-element');
 
-      // 3) Real-time validation
+      // Wire up real-time validation so any card errors show immediately.
+      // The callback fires whenever the user types or the card’s validity changes.
       this.card.on('change', e => {
+        // If there’s an error, display its message; otherwise clear any previous error.
         this.cardError = e.error ? e.error.message : '';
       });
 
-      // 4) Fetch booking total
+      // Fetch booking total and currency
       const bookingRes = await fetch(
         `http://localhost:3000/bookings/${this.bookingId}`,
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       if (!bookingRes.ok) throw new Error('Could not load booking');
-      this.totalPrice = (await bookingRes.json()).totalPrice;
 
-      // 5) Create payment intent
+      const booking = await bookingRes.json();
+
+      this.totalPrice = booking.totalPrice;
+      this.currency   = booking.campingspots.prices[0]?.currency || 'EUR';
+
+      // Create payment intent
       const piRes = await fetch('http://localhost:3000/payments/create-intent', {
         method: 'POST',
         headers: {
@@ -93,7 +106,7 @@ export default {
       if (!piRes.ok) throw new Error('Failed to initialize payment');
       this.clientSecret = (await piRes.json()).clientSecret;
 
-      // 6) Now that element & clientSecret are ready:
+      // Now that element & clientSecret are ready:
       this.stripeReady = true;
 
     } catch (err) {
@@ -134,10 +147,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* give the card element a consistent height */
-#card-element {
-  height: 40px;
-}
-</style>

@@ -369,7 +369,8 @@ export default {
       
       files.forEach(file => {
         if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
+          const reader = new FileReader(); // FileReader is a browser API that can convert a File into 
+          // a Base64-encoded string (data: URL), which can be used directly as an <img src="…">
           reader.onload = (e) => {
             this.selectedImages.push({
               file: file,

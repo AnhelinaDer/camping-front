@@ -1,3 +1,10 @@
 @tailwind base;
+/*Injects Tailwind’s Preflight (a lightweight, opinionated CSS reset)
+
+Also includes any @layer base { … } rules you write
+
+Runs first, so browsers start from a normalized baseline*/
 @tailwind components;
+/*Injects Tailwind’s component classes. Also brings in Tailwind’s plugin-provided components*/
 @tailwind utilities;
+/*Injects Tailwind’s utility classes. Also brings in Tailwind’s plugin-provided utilities  (the “p-4”, “text-center”, etc.)*/
